@@ -3,7 +3,7 @@ import google.auth.transport.requests
 from google.oauth2 import service_account
 import json
 
-def getAuth(projectId, jsonKeyLocation):    
+def getAuth(jsonKeyLocation):    
     gcp_service_account_json = None
     with open(jsonKeyLocation) as json_file:
         gcp_service_account_json = json.load(json_file)
