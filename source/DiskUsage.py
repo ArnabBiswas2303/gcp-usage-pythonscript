@@ -7,7 +7,28 @@ def getDisks(credential_object, project_id):
         response = request.execute()
         
         for name, disks_scoped_list in response['items'].items():
-            # TODO: Change code below to process each (name, disks_scoped_list) item:
-            print(disks_scoped_list)
+            if 'disks' in disks_scoped_list:
+                for disk in disks_scoped_list['disks']:
+                    is_regional, in_use = False, False
+                    use_instance_name, region, zone = '', '', ''
+                    replica_zones = []
+
+                    id = disk['id']
+                    name = disk['name']
+                    sizeGb = disk['sizeGb']
+
+                    if 'region' in disk:
+                        is_regional = True
+                        region = disk['region'].split('/')[-1]
+                        replica_zones = [disk['replicaZones'][0].split('/')[-1], disk['replicaZones'][1].split('/')[-1]]
+                    else:
+                        zone = disk['zone'].split('/')[-1]
+
+                    if 'users' in disk:
+                        in_use = True
+                        use_instance_name = disk['users'][0].split('/')[-1]
+
+                    print(id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name)
+                
 
         request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
