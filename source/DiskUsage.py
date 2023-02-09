@@ -3,6 +3,8 @@ from googleapiclient import discovery
 def getDisks(credential_object, project_id):
     service = discovery.build('compute', 'v1', credentials=credential_object)
     request = service.disks().aggregatedList(project=project_id)
+    count = 1
+
     while request is not None:
         response = request.execute()
         
@@ -31,7 +33,8 @@ def getDisks(credential_object, project_id):
                     if 'creationTimestamp' in disk:
                         creationTime = disk['creationTimestamp']
 
-                    print(id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
+                    print(count, id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
+                    count+=1
                 
 
         request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
