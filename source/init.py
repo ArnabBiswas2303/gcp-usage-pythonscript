@@ -12,8 +12,7 @@ credential_object = Authentication.getAuth(json_key_location)
 DiskUsage.getDisks(credential_object, project_id)
 
 GetInstances.getInstances(credentials=credential_object,
-                         project_id='vsa-dev-298916')
+                          project_id='vsa-dev-298916')
 
 SnapUsage.getSnaps(credential_object=credential_object,
-                            project_id=project_id)
-
+                   project_id=project_id)

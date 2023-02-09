@@ -1,20 +1,54 @@
 from googleapiclient import discovery
+from datetime import datetime
+
+# constants
+nodeGroupNameKey = 'compute.googleapis.com/node-group-name'
+nodeNameKey = 'compute.googleapis.com/node-name'
 
 
 def getInstances(credentials, project_id):
 
     service = discovery.build('compute', 'v1', credentials=credentials)
     request = service.instances().aggregatedList(project=project_id)
+
+    counter = 1
     while request is not None:
         response = request.execute()
         for zone in response['items']:
             if 'instances' in response['items'][zone]:
                 for instance in response['items'][zone]['instances']:
-                    print(instance['name'], instance['id'],
-                          len(instance['disks']), end=' ')
+                    instanceName, instanceId, diskCount = instance['name'], instance['id'], len(
+                        instance['disks'])
+                    natIP, guestOS, creationTime = None, None, None
+                    nodeGroupName, nodeName = None, None
+
+                    if 'creationTimestamp' in instance:
+                        creationTime = instance['creationTimestamp'].split('T')[
+                            0]
+                        UTCTime = datetime.strptime(creationTime, "%Y-%m-%d")
+                        epochTime = (UTCTime - datetime(1970, 1, 1)
+                                     ).total_seconds()
+                        timeObj = datetime.fromtimestamp(epochTime)
+                        creationTime = timeObj.strftime("%d %b, %Y")
+
+                    if 'networkInterfaces' in instance and 'accessConfigs' in instance['networkInterfaces'][0]:
+                        accessConfigs = instance["networkInterfaces"][0]['accessConfigs'][0]
+                        natIP = accessConfigs['natIP'] if 'natIP' in accessConfigs else None
+
                     for disk in instance['disks']:
                         if disk['boot'] == True:
-                            print(disk['licenses'][0].split('/')[-1])
+                            guestOS = disk['licenses'][0].split('/')[-1]
+
+                    if 'nodeAffinities' in instance['scheduling']:
+                        for element in instance['scheduling']['nodeAffinities']:
+                            if element['key'] == nodeGroupNameKey:
+                                nodeGroupName = element['values'][0]
+                            if element['key'] == nodeNameKey:
+                                nodeName = element['values'][0]
+
+                    print(counter, instanceName, instanceId, creationTime, diskCount,
+                          guestOS, natIP, nodeGroupName, nodeName)
+                    counter = counter + 1
 
         request = service.instances().aggregatedList_next(
             previous_request=request, previous_response=response)
