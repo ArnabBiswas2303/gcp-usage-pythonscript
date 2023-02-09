@@ -10,7 +10,7 @@ def getDisks(credential_object, project_id):
             if 'disks' in disks_scoped_list:
                 for disk in disks_scoped_list['disks']:
                     is_regional, in_use = False, False
-                    use_instance_name, region, zone = '', '', ''
+                    use_instance_name, region, zone, creationTime = '', '', '', ''
                     replica_zones = []
 
                     id = disk['id']
@@ -27,8 +27,11 @@ def getDisks(credential_object, project_id):
                     if 'users' in disk:
                         in_use = True
                         use_instance_name = disk['users'][0].split('/')[-1]
+                    
+                    if 'creationTimestamp' in disk:
+                        creationTime = disk['creationTimestamp']
 
-                    print(id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name)
+                    print(id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
                 
 
         request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
