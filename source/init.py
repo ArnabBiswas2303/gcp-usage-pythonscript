@@ -3,6 +3,7 @@ import DiskUsage
 import GetInstances
 import SnapUsage
 import IpUsage
+import BucketUsage
 
 project_id = 'vsa-dev-298916'
 json_key_location = 'C:/Users/hmalik/Documents/vsa-dev-298916-7a558f236b34.json'
@@ -21,3 +22,4 @@ SnapUsage.getSnaps(credential_object=credential_object,
 IpUsage.getStaticIP(credential_object, project_id)
 
 
+BucketUsage.getBuckets(credential_object, project_id)
