@@ -1,5 +1,6 @@
 from googleapiclient import discovery
 from datetime import datetime
+import pandas as pd
 
 # constants
 nodeGroupNameKey = 'compute.googleapis.com/node-group-name'
@@ -12,6 +13,9 @@ def getInstances(credentials, project_id):
     request = service.instances().aggregatedList(project=project_id)
 
     counter = 1
+    col = ['instanceName', 'instanceId', 'creationTime', 'diskCount',
+                        'guestOS', 'natIP', 'nodeGroupName', 'nodeName']
+    instance_df = pd.DataFrame(columns=col)
     while request is not None:
         response = request.execute()
         for zone in response['items']:
@@ -46,9 +50,16 @@ def getInstances(credentials, project_id):
                             if element['key'] == nodeNameKey:
                                 nodeName = element['values'][0]
 
-                    print(counter, instanceName, instanceId, creationTime, diskCount,
-                          guestOS, natIP, nodeGroupName, nodeName)
+                    #print(counter, instanceName, instanceId, creationTime, diskCount,
+                    #      guestOS, natIP, nodeGroupName, nodeName)
+                    data_dict = {'instanceName' : instanceName, 'instanceId' : instanceId, 'creationTime' : creationTime, 
+                                'diskCount' : diskCount, 'guestOS':guestOS, 'natIP' : natIP, 
+                                'nodeGroupName' : nodeGroupName, 'nodeName':nodeName}
+                    temp_df = pd.DataFrame(data_dict, index=[0])
+                    instance_df = pd.concat([instance_df,temp_df])
                     counter = counter + 1
+                    
 
         request = service.instances().aggregatedList_next(
             previous_request=request, previous_response=response)
+    return instance_df

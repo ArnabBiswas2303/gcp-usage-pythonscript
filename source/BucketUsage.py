@@ -1,11 +1,16 @@
 from googleapiclient import discovery
 from datetime import datetime
+import pandas as pd
 
 def getBuckets(credential_object, project_id):
     service = discovery.build('storage', 'v1', credentials=credential_object)
     request = service.buckets().list(project=project_id)
     count = 0
-
+    col = ['id', 'name', 'projectNumber', 'location', 'location_type', 'storageClass', 'creation_time', 'isDefaultEventBasedHoldEnabled', 
+            'rpo', 'isBucketPolicyEnabled', 'isUniformBucketLevelAccessEnabled', 'publicAccessPrevention']
+    bucket_df = pd.DataFrame(columns=col)
+    bucket_df = bucket_df.astype({'isDefaultEventBasedHoldEnabled':bool,'isBucketPolicyEnabled':bool,
+                    'isUniformBucketLevelAccessEnabled':bool})
     while request is not None:
         response = request.execute()
         buckets = response['items']
@@ -36,11 +41,19 @@ def getBuckets(credential_object, project_id):
             isUniformBucketLevelAccessEnabled = iamConfigurations['uniformBucketLevelAccess']['enabled']
             publicAccessPrevention = iamConfigurations['publicAccessPrevention']
 
-            print(count, id, name, projectNumber, location, location_type, storageClass, creation_time, isDefaultEventBasedHoldEnabled, 
-                    rpo, isBucketPolicyEnabled, isUniformBucketLevelAccessEnabled, publicAccessPrevention)
-            print()
+            #print(count, id, name, projectNumber, location, location_type, storageClass, creation_time, isDefaultEventBasedHoldEnabled, 
+            #        rpo, isBucketPolicyEnabled, isUniformBucketLevelAccessEnabled, publicAccessPrevention)
+            data_dict = {'id':id, 'name':name, 'projectNumber':projectNumber, 'location':location, 
+                'location_type':location_type, 'storageClass':storageClass, 'creation_time':creation_time, 
+                'isDefaultEventBasedHoldEnabled':isDefaultEventBasedHoldEnabled, 'rpo':rpo, 
+                'isBucketPolicyEnabled':isBucketPolicyEnabled, 
+                'isUniformBucketLevelAccessEnabled':isUniformBucketLevelAccessEnabled, 
+                'publicAccessPrevention':publicAccessPrevention}
+            temp_df = pd.DataFrame(data_dict, index=[0])
+            bucket_df = pd.concat([bucket_df,temp_df])
 
         request = service.buckets().list_next(previous_request=request, previous_response=response)
+    return bucket_df
     
 
 

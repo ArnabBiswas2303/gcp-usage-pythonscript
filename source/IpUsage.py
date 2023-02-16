@@ -1,11 +1,13 @@
 from googleapiclient import discovery
 from datetime import datetime
+import pandas as pd
 
 def getStaticIP(credential_object, project_id):
     count=0
     service = discovery.build('compute', 'v1', credentials=credential_object)
     request = service.addresses().aggregatedList(project=project_id)
-
+    col = ['address_id', 'name', 'ip', 'status', 'creation_time', 'region', 'instance']
+    ips_df = pd.DataFrame(columns=col)
     while request is not None:
         response = request.execute()
         for name, addresses_scoped_list in response['items'].items():
@@ -40,8 +42,13 @@ def getStaticIP(credential_object, project_id):
                 region = address['region'].split('/')[-1]
                 status = address['status']
 
-                print(count, address_id, name, ip, status, creation_time, region, instance)
+                #print(count, address_id, name, ip, status, creation_time, region, instance)
+                data_dict = {'address_id':address_id, 'name':name, 'ip':ip, 
+                            'status':status, 'creation_time':creation_time, 'region':region, 'instance':instance}
+                temp_df = pd.DataFrame(data_dict, index=[0])
+                ips_df = pd.concat([ips_df,temp_df])
 
         request = service.addresses().aggregatedList_next(previous_request=request, previous_response=response)
+    return ips_df
 
 
