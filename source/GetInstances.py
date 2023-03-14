@@ -13,7 +13,7 @@ def getInstances(credentials, project_id):
     request = service.instances().aggregatedList(project=project_id)
 
     counter = 1
-    col = ['instanceName', 'instanceId', 'creationTime', 'diskCount',
+    col = ['instanceName', 'instanceId', 'creation_time', 'diskCount',
                         'guestOS', 'natIP', 'nodeGroupName', 'nodeName']
     instance_df = pd.DataFrame(columns=col)
     while request is not None:
@@ -23,17 +23,16 @@ def getInstances(credentials, project_id):
                 for instance in response['items'][zone]['instances']:
                     instanceName, instanceId, diskCount = instance['name'], instance['id'], len(
                         instance['disks'])
-                    natIP, guestOS, creationTime = None, None, None
+                    natIP, guestOS, creation_time = None, None, None
                     nodeGroupName, nodeName = None, None
 
                     if 'creationTimestamp' in instance:
-                        creationTime = instance['creationTimestamp'].split('T')[
-                            0]
-                        UTCTime = datetime.strptime(creationTime, "%Y-%m-%d")
+                        creation_time = instance['creationTimestamp'].split('T')[0]
+                        UTCTime = datetime.strptime(creation_time, "%Y-%m-%d")
                         epochTime = (UTCTime - datetime(1970, 1, 1)
                                      ).total_seconds()
                         timeObj = datetime.fromtimestamp(epochTime)
-                        creationTime = timeObj.strftime("%d %b, %Y")
+                        creation_time = timeObj.strftime("%Y-%m-%d")
 
                     if 'networkInterfaces' in instance and 'accessConfigs' in instance['networkInterfaces'][0]:
                         accessConfigs = instance["networkInterfaces"][0]['accessConfigs'][0]
@@ -52,7 +51,7 @@ def getInstances(credentials, project_id):
 
                     #print(counter, instanceName, instanceId, creationTime, diskCount,
                     #      guestOS, natIP, nodeGroupName, nodeName)
-                    data_dict = {'instanceName' : instanceName, 'instanceId' : instanceId, 'creationTime' : creationTime, 
+                    data_dict = {'instanceName' : instanceName, 'instanceId' : instanceId, 'creation_time' : creation_time, 
                                 'diskCount' : diskCount, 'guestOS':guestOS, 'natIP' : natIP, 
                                 'nodeGroupName' : nodeGroupName, 'nodeName':nodeName}
                     temp_df = pd.DataFrame(data_dict, index=[0])

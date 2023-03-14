@@ -40,8 +40,8 @@ def getSnaps(credential_object, project_id):
                 is_auto_created = True
                 schedule_policy = snapshot['sourceSnapshotSchedulePolicy'].split('/')[-1]
             count+=1
-            print(count,snap_id, snap_name, creation_time, status, source_disk, source_disk_size, storage_byte, 
-                is_multi_regional, snap_loc, is_auto_created, schedule_policy)
+            #print(count,snap_id, snap_name, creation_time, status, source_disk, source_disk_size, storage_byte, 
+            #    is_multi_regional, snap_loc, is_auto_created, schedule_policy)
             data_dict = {'snap_id':snap_id, 'snap_name':snap_name, 'creation_time':creation_time, 'status':status, 
                         'source_disk':source_disk, 'source_disk_size':source_disk_size, 'storage_byte':storage_byte, 
                         'is_multi_regional':is_multi_regional, 'snap_loc':snap_loc, 'is_auto_created':is_auto_created, 
