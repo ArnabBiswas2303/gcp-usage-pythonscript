@@ -19,41 +19,52 @@ credential_object = Authentication.getAuth(json_key_location)
 
 #fetch ips usage
 ips = IpUsage.getStaticIP(credential_object, project_id)
+ips = ips.reset_index(drop=True)
 highlighted_rows = np.where(ips['creation_time'].isin(date_condition),
                             'background-color: yellow',
                             '')
-ips = ips.style.apply(lambda _: highlighted_rows)
+ip_styler = ips.style.apply(lambda _: highlighted_rows)
 
+#fetch disk usage
 disks = DiskUsage.getDisks(credential_object, project_id)
+disks = disks.reset_index(drop=True)
+highlighted_rows = np.where(disks['creation_time'].isin(date_condition),
+                            'background-color: yellow',
+                            '')
+disk_styler = disks.style.apply(lambda _: highlighted_rows)
 
 #fetch instance usage
 instances = GetInstances.getInstances(credentials=credential_object,
                           project_id=project_id)
-highlighted_rows = np.where(instances['creation_time'].isin(date_condition),
+instances = instances.reset_index(drop=True)
+highlighted_rows_instances = np.where(instances['creation_time'].isin(date_condition),
                             'background-color: yellow',
                             '')
-instances = instances.style.apply(lambda _: highlighted_rows)
-#print(instances)
+instances_styler = instances.style.apply(lambda _: highlighted_rows_instances)
 
-#fetch bucket usage
-buckets = BucketUsage.getBuckets(credential_object, project_id)
-highlighted_rows = buckets['creation_time'].isin(date_condition).map({
-    True: 'background-color: yellow',
-    False: ''
-})
-buckets = buckets.style.apply(lambda _: highlighted_rows)
+# #fetch bucket usage
+# buckets = BucketUsage.getBuckets(credential_object, project_id)
+# buckets = buckets.reset_index(drop=True)
+# highlighted_rows = np.where(buckets['creation_time'].isin(date_condition),
+#                             'background-color: yellow',
+#                             '')
+# buckets_styler = buckets.style.apply(lambda _: highlighted_rows)
+
 
 #fetch snap usage
 snaps = SnapUsage.getSnaps(credential_object=credential_object,
                    project_id=project_id)
+snaps = snaps.reset_index(drop=True)
 highlighted_rows = np.where(snaps['creation_time'].isin(date_condition),
                             'background-color: yellow',
                             '')
-snaps = snaps.style.apply(lambda _: highlighted_rows)
+snaps_styler = snaps.style.apply(lambda _: highlighted_rows)
+
 
 with pd.ExcelWriter("test.xlsx") as writer:
-    instances.to_excel(writer, sheet_name="instances", index=False)
-    disks.to_excel(writer, sheet_name="disks", index=False) 
-    buckets.to_excel(writer, sheet_name="buckets",index=False)
-    ips.to_excel(writer, sheet_name="IPs",index=False)
-    snaps.to_excel(writer, sheet_name="Snapshots", index=False)
+    instances_styler.to_excel(writer, sheet_name="instances", index=False)
+    disk_styler.to_excel(writer, sheet_name="disks", index=False) 
+    # #buckets_styler.to_excel(writer, sheet_name="buckets",index=False)
+    ip_styler.to_excel(writer, sheet_name="IPs",index=False)
+    snaps_styler.to_excel(writer, sheet_name="Snapshots", index=False)
+

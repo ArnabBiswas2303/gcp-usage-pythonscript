@@ -20,10 +20,11 @@ def getSnaps(credential_object, project_id):
             snap_id = snapshot['id']
 
             creation_time = snapshot['creationTimestamp'].split('T')[0]
-            utc_time = datetime.strptime(creation_time, "%Y-%m-%d")
-            epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
-            time_obj = datetime.fromtimestamp(epoch_time)
-            creation_time = time_obj.strftime("%d %b, %Y")
+            UTCTime = datetime.strptime(creation_time, "%Y-%m-%d")
+            epochTime = (UTCTime - datetime(1970, 1, 1)
+                            ).total_seconds()
+            timeObj = datetime.fromtimestamp(epochTime)
+            creation_time = timeObj.strftime("%Y-%m-%d")
 
             snap_name = snapshot['name']
             status = snapshot['status']
