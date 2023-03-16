@@ -1,4 +1,5 @@
 from googleapiclient import discovery
+from datetime import datetime
 from functools import reduce
 import pandas as pd
 
@@ -28,7 +29,6 @@ def getDisks(credential_object, project_id):
                         is_regional = True
                         region = disk['region'].split('/')[-1]
                         replica_zones = [disk['replicaZones'][0].split('/')[-1], disk['replicaZones'][1].split('/')[-1]]
-                        #['us-east1-b', 'us-east1-c']
                         replica_zones = reduce(lambda a, b : a+ " | " +str(b), replica_zones)
                     else:
                         zone = disk['zone'].split('/')[-1]
@@ -38,16 +38,19 @@ def getDisks(credential_object, project_id):
                         use_instance_name = disk['users'][0].split('/')[-1]
                     
                     if 'creationTimestamp' in disk:
-                        creationTime = disk['creationTimestamp']
+                        creation_time = disk['creationTimestamp'].split('T')[0]
+                        UTCTime = datetime.strptime(creation_time, "%Y-%m-%d")
+                        epochTime = (UTCTime - datetime(1970, 1, 1)
+                                     ).total_seconds()
+                        timeObj = datetime.fromtimestamp(epochTime)
+                        creation_time = timeObj.strftime("%Y-%m-%d")
 
                     #print(count, id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
                     data_dict = {'id':id, 'name':name, 'sizeGb':sizeGb, 'is_regional':is_regional, 
                             'region':region, 'zone':zone, 'replica_zones':replica_zones, 'in_use':in_use, 
-                            'use_instance_name':use_instance_name, 'creation_time':creationTime}
+                            'use_instance_name':use_instance_name, 'creation_time':creation_time}
                     temp_df = pd.DataFrame(data_dict, index=[0])
                     disk_df = pd.concat([disk_df,temp_df])
                     count+=1
-                
-
         request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
     return disk_df
