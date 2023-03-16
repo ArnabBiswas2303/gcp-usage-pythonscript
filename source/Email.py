@@ -1,5 +1,6 @@
 import win32com.client as win32
 import os
+from datetime import date
 
 # Import modules
 import email, smtplib, ssl
@@ -8,10 +9,9 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
 import HTML
 
-def sendMail():
+def sendMail(instances = "", disks = "", snapshots = "", projects = ""):
     instances = 500
     disks = 30
     snapshots = 5
@@ -43,16 +43,20 @@ def sendMail():
         }
     ]
 
+    today =  date.today()
+
     outlook = win32.Dispatch('outlook.application')
     mail = outlook.CreateItem(0)
     mail.To = os.getenv('GCP_SCRIPT_EMAIL_TO')
-    mail.Subject = 'TEST MAIL'
+    mail.Subject = f'GCP {today.strftime("%m/%d/%Y")} usage report'
     mail.HTMLBody = HTML.generateHTML(instances, disks, snapshots, projects)
     #this field is optional
 
     # To attach a file to the email (optional):
-    # attachment  = "Path to the attachment"
-    # mail.Attachments.Add(attachment)
+    attachment  = f"{os.getcwd()}\\vsa-dev-298916.xlsx"
+    mail.Attachments.Add(attachment)
+
+    print(os.getcwd())
 
     mail.Send()
     print("Mail Sent!")

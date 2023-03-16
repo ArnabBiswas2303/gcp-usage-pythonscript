@@ -4,12 +4,13 @@ import GetInstances
 import SnapUsage
 import IpUsage
 import BucketUsage
+import Email
 import pandas as pd
 import datetime as DT
 import numpy as np
 
 project_id = 'vsa-dev-298916'
-json_key_location = 'C:/Users/hmalik/Documents/vsa-dev-298916-7a558f236b34.json'
+json_key_location = 'C:\\Users\\abiswas\\Desktop\\LOGS\\IAM_JSON\\vsa-dev-298916-7a558f236b34.json'
 
 
 today = DT.datetime.now().strftime("%d %b, %Y")
@@ -65,10 +66,12 @@ highlighted_rows_snaps = np.where(snaps['creation_time'].isin(date_condition),
 snaps_styler = snaps.style.apply(lambda _: highlighted_rows_snaps)
 
 
-with pd.ExcelWriter("test.xlsx") as writer:
+with pd.ExcelWriter(f"{project_id}.xlsx") as writer:
     instances_styler.to_excel(writer, sheet_name="instances", index=False)
     disk_styler.to_excel(writer, sheet_name="disks", index=False) 
     buckets_styler.to_excel(writer, sheet_name="buckets",index=False)
     ip_styler.to_excel(writer, sheet_name="IPs",index=False)
     snaps_styler.to_excel(writer, sheet_name="Snapshots", index=False)
 
+
+Email.sendMail()
