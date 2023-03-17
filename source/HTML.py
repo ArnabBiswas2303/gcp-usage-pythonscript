@@ -1,6 +1,6 @@
 from datetime import date
 
-def midRow(projName, instance, disk, snapshot):
+def midRow(project_id, instance, disk, snapshot):
     return f'''
                         <tr>
                           <td height="5"></td>
@@ -45,7 +45,7 @@ def midRow(projName, instance, disk, snapshot):
                                     "
                                   >
                                     <div class="alignment" align="center">
-                                      <p>{projName}</p>
+                                      <p>{project_id}</p>
                                     </div>
                                   </td>
                                 </tr>
@@ -202,7 +202,7 @@ def midRow(projName, instance, disk, snapshot):
                         </tr>
     '''
 
-def lastRow(projName, instance, disk, snapshot):
+def lastRow(project_id, instance, disk, snapshot):
     return f'''
                           <tr class="reverse" height="80">
                           <td
@@ -243,7 +243,7 @@ def lastRow(projName, instance, disk, snapshot):
                                     "
                                   >
                                     <div class="alignment" align="center">
-                                      <p>{projName}</p>
+                                      <p>{project_id}</p>
                                     </div>
                                   </td>
                                 </tr>
@@ -410,15 +410,15 @@ def generateHTML(instances, disks, snapshots, projects):
     year = today.strftime("%Y")
 
     for i in range(projLen):
-        projName = projects[i]['projectName']
+        project_id = projects[i]['project_id']
         instance = projects[i]['instances']
         disk = projects[i]['disks']
         snapshot = projects[i]['snapshots']
         
         if (projLen - 1):
-          utilizationRows += lastRow(projName, instance, disk, snapshot)
+          utilizationRows += lastRow(project_id, instance, disk, snapshot)
         else:
-          utilizationRows += midRow(projName, instance, disk, snapshot)
+          utilizationRows += midRow(project_id, instance, disk, snapshot)
     
     
 

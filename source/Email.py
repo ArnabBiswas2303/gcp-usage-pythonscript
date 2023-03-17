@@ -12,48 +12,18 @@ from email.mime.text import MIMEText
 import HTML
 
 def sendMail(instances = "", disks = "", snapshots = "", projects = ""):
-    instances = 500
-    disks = 30
-    snapshots = 5
-
-    projects = [
-        {
-            "projectName": "vsa-dev-291239",
-            "instances": 20,
-            "disks": 100,
-            "snapshots": 9
-        },
-        {
-            "projectName": "vsa-dev-291239",
-            "instances": 20,
-            "disks": 100,
-            "snapshots": 9
-        },
-        {
-            "projectName": "vsa-dev-291239",
-            "instances": 20,
-            "disks": 100,
-            "snapshots": 9
-        },
-        {
-            "projectName": "vsa-dev-291239",
-            "instances": 20,
-            "disks": 100,
-            "snapshots": 9
-        }
-    ]
-
     today =  date.today()
 
     outlook = win32.Dispatch('outlook.application')
     mail = outlook.CreateItem(0)
     mail.To = os.getenv('GCP_SCRIPT_EMAIL_TO')
-    mail.Subject = f'GCP {today.strftime("%m/%d/%Y")} usage report'
+    mail.Subject = f'GCP {today.strftime("%d %B %Y")} Usage Report'
     mail.HTMLBody = HTML.generateHTML(instances, disks, snapshots, projects)
     #this field is optional
 
     # To attach a file to the email (optional):
-    attachment  = f"{os.getcwd()}\\vsa-dev-298916.xlsx"
+    for project_obj in projects:
+        attachment  = f"{os.getcwd()}\\{project_obj['project_id']}.xlsx"
     mail.Attachments.Add(attachment)
 
     print(os.getcwd())
