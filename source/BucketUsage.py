@@ -24,11 +24,12 @@ def getBuckets(credential_object, project_id):
             location = bucket['location']
             location_type = bucket['locationType']
             storageClass = bucket['storageClass']
+
             creation_time = bucket['timeCreated'].split('T')[0]
             utc_time = datetime.strptime(creation_time, "%Y-%m-%d")
             epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
             time_obj = datetime.fromtimestamp(epoch_time)
-            creation_time = time_obj.strftime("%d %b, %Y")
+            creation_time = time_obj.strftime("%Y-%m-%d")
 
 
             if 'defaultEventBasedHold' in bucket:
