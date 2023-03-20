@@ -10,8 +10,8 @@ import pandas as pd
 import datetime as DT
 import numpy as np
 import os
+from googleapiclient import discovery
 
-project_ids = ['vsa-dev-298916']
 json_key_location = str(os.getenv('GCP_SCRIPT_JSON_KEY_PATH'))
 
 
@@ -95,6 +95,16 @@ def GetUsage(project_id):
 
 total_instances = total_disks = total_snaps = total_bukets = total_ips = total_keys = 0
 total_projects = []
+
+project_ids = []
+credential_object = Authentication.getAuth(json_key_location)
+service = discovery.build('cloudresourcemanager', 'v1', credentials=credentials)
+request = service.projects().list()
+while request is not None:
+    response = request.execute()
+    response = response['projects']
+    for project in response:
+        project_ids.append(project['projectId'])
 
 for project_id in project_ids:
     instances, disks, snaps, buckets, ips, keys = GetUsage(project_id)
