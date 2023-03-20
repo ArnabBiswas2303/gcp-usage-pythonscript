@@ -98,13 +98,14 @@ total_projects = []
 
 project_ids = []
 credential_object = Authentication.getAuth(json_key_location)
-service = discovery.build('cloudresourcemanager', 'v1', credentials=credentials)
+service = discovery.build('cloudresourcemanager', 'v1', credentials=credential_object)
 request = service.projects().list()
 while request is not None:
     response = request.execute()
-    response = response['projects']
-    for project in response:
+    projects = response['projects']
+    for project in projects:
         project_ids.append(project['projectId'])
+    request = service.projects().list_next(previous_request=request, previous_response=response)
 
 for project_id in project_ids:
     instances, disks, snaps, buckets, ips, keys = GetUsage(project_id)
