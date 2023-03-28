@@ -23,8 +23,9 @@ def sendMail(instances = "", disks = "", snapshots = "", projects = ""):
 
     # To attach a file to the email (optional):
     for project_obj in projects:
+        print(f"Attaching : {project_obj['project_id']}.xlsx")
         attachment  = f"{os.getcwd()}\\{project_obj['project_id']}.xlsx"
-    mail.Attachments.Add(attachment)
+        mail.Attachments.Add(attachment)
 
     print(os.getcwd())
 
