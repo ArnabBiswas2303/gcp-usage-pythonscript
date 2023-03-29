@@ -20,6 +20,16 @@ def getStaticIP(credential_object, project_id):
             address_list = addresses_scoped_list['addresses']
             instance = '-'
             for address in address_list:
+
+                # global variables
+                address_id = address['id']
+                creation_time = address['creationTimestamp'].split('T')[0]
+                utc_time = datetime.strptime(creation_time, "%Y-%m-%d")
+                epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
+                time_obj = datetime.fromtimestamp(epoch_time)
+                creation_time = time_obj.strftime("%Y-%m-%d")
+                instance = '-'
+
                 #skip if address type is INTERNAL
                 if address['addressType'] == "INTERNAL":
                     continue
@@ -29,13 +39,6 @@ def getStaticIP(credential_object, project_id):
                     if address['users'][0].split('/')[-2] != 'instances':
                         continue
                     instance = address['users'][0].split('/')[-1]
-
-                address_id = address['id']
-                creation_time = address['creationTimestamp'].split('T')[0]
-                utc_time = datetime.strptime(creation_time, "%Y-%m-%d")
-                epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
-                time_obj = datetime.fromtimestamp(epoch_time)
-                creation_time = time_obj.strftime("%Y-%m-%d")
 
                 name = address['name']
                 ip = address['address']

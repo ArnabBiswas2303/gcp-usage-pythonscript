@@ -132,6 +132,8 @@ def GetUsage(project_id):
 total_instances = total_disks = total_snaps = total_bukets = total_ips = total_keys = 0
 total_projects = []
 
+
+# Get All Projects
 project_ids = []
 credential_object = Authentication.getAuth(json_key_location)
 service = discovery.build('cloudresourcemanager', 'v1', credentials=credential_object)
@@ -142,6 +144,7 @@ while request is not None:
     for project in projects:
         project_ids.append(project['projectId'])
     request = service.projects().list_next(previous_request=request, previous_response=response)
+print(project_ids)
 
 for project_id in project_ids:
     instances, disks, snaps, buckets, ips, keys, actionable_items = GetUsage(project_id)
