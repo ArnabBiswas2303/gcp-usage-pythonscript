@@ -18,6 +18,7 @@ def getStaticIP(credential_object, project_id):
             if 'warning' in addresses_scoped_list:
                 continue
             address_list = addresses_scoped_list['addresses']
+            instance = '-'
             for address in address_list:
                 #skip if address type is INTERNAL
                 if address['addressType'] == "INTERNAL":
@@ -25,7 +26,6 @@ def getStaticIP(credential_object, project_id):
                 count+=1
                 if 'users' in address:
                     #skip if forwarding rule
-                    instance = '-'
                     if address['users'][0].split('/')[-2] != 'instances':
                         continue
                     instance = address['users'][0].split('/')[-1]

@@ -10,7 +10,7 @@ def getDisks(credential_object, project_id):
     col = ['id', 'name', 'sizeGb', 'is_regional', 'region', 'zone', 
             'replica_zones', 'in_use', 'use_instance_name', 'creation_time']
     disk_df = pd.DataFrame(columns=col)
-    disk_df = disk_df.astype({'is_regional':bool,'in_use':bool})
+    disk_df = disk_df.astype({'is_regional':bool,'in_use':bool, 'sizeGb':int})
 
     while request is not None:
         response = request.execute()
