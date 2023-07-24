@@ -9,6 +9,7 @@ def getKeys(credentials, projectId):
 
     instance_df = pd.DataFrame(columns=['key_name', 'key_version_count'])
 
+    return instance_df
     name = f'projects/{projectId}'
     request = service.projects().locations().list(name=name)
     while True:

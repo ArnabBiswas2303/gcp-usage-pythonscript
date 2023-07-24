@@ -17,7 +17,7 @@ def midRow(project_id, instance, disk, snapshot):
                               border-top: 0px;
                               border-right: 0px;
                               border-bottom: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               width: 25%;
                             "
                           >
@@ -65,7 +65,7 @@ def midRow(project_id, instance, disk, snapshot):
                               border-right: 0px;
                               border-bottom: 0px;
                               border-left: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                               width: 25%;
@@ -114,7 +114,7 @@ def midRow(project_id, instance, disk, snapshot):
                               border-right: 0px;
                               border-bottom: 0px;
                               border-left: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                               width: 25%;
@@ -160,11 +160,11 @@ def midRow(project_id, instance, disk, snapshot):
                               text-align: left;
                               vertical-align: center;
                               border-top: 0px;
-                              border-right: 3px solid coral;
+                              border-right: 3px solid #068FFF;
                               border-bottom: 0px;
                               padding-left: 2px;
                               padding-right: 2px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               width: 25%;
                             "
                           >
@@ -215,7 +215,7 @@ def lastRow(project_id, instance, disk, snapshot):
                               border-top: 0px;
                               border-right: 0px;
                               border-bottom: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               width: 25%;
                             "
                           >
@@ -262,7 +262,7 @@ def lastRow(project_id, instance, disk, snapshot):
                               border-right: 0px;
                               border-bottom: 0px;
                               border-left: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                               width: 25%;
@@ -311,7 +311,7 @@ def lastRow(project_id, instance, disk, snapshot):
                               border-right: 0px;
                               border-bottom: 0px;
                               border-left: 0px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                               width: 25%;
@@ -357,11 +357,11 @@ def lastRow(project_id, instance, disk, snapshot):
                               text-align: left;
                               vertical-align: center;
                               border-top: 0px;
-                              border-right: 3px solid coral;
+                              border-right: 3px solid #068FFF;
                               border-bottom: 0px;
                               padding-left: 2px;
                               padding-right: 2px;
-                              border-left: 3px solid coral;
+                              border-left: 3px solid #068FFF;
                               width: 25%;
                             "
                           >
@@ -409,6 +409,7 @@ def generateHTML(instances, disks, snapshots, projects):
     month = months[int(today.strftime("%m")) - 1]
     year = today.strftime("%Y")
 
+    # Generate utilization rows
     for i in range(projLen):
         project_id = projects[i]['project_id']
         instance = projects[i]['instances']
@@ -436,12 +437,15 @@ def generateHTML(instances, disks, snapshots, projects):
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Open+Sans:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
       rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     />
     <!--[if mso
       ]><xml
@@ -456,9 +460,17 @@ def generateHTML(instances, disks, snapshots, projects):
       type="text/css"
     />
     <!--<![endif]-->
+
     <style>
       * {{
         box-sizing: border-box;
+      }}
+
+      @font-face {{
+        font-family: "Josefin Sans";
+        src: url("../fonts/JosefinSans-Bold.ttf") format("truetype");
+        font-weight: bold; /* Adjust the weight as needed */
+        font-style: normal; /* Adjust the style as needed */
       }}
 
       body {{
@@ -729,7 +741,6 @@ def generateHTML(instances, disks, snapshots, projects):
                               text-align: left;
                               padding-left: 25px;
                               padding-right: 25px;
-                              vertical-align: top;
                               border-top: 0px;
                               border-right: 0px;
                               border-bottom: 0px;
@@ -765,6 +776,7 @@ def generateHTML(instances, disks, snapshots, projects):
                                         text-align: center;
                                         margin-top: 0;
                                         margin-bottom: 0;
+                                        font-family: Montserrat, sans-serif;
                                       "
                                     >
                                       <strong>{month} {year}</strong>
@@ -826,7 +838,7 @@ def generateHTML(instances, disks, snapshots, projects):
                                   >
                                     <div class="alignment" align="center">
                                       <img
-                                        src="https://www.seekpng.com/png/detail/357-3579815_google-cloud-platform-governors-institute-of-vermont.png"
+                                        src="https://storage.googleapis.com/gcp-script-bucket/GCPMain.jpg"
                                         style="
                                           display: block;
                                           border: 0;
@@ -852,6 +864,129 @@ def generateHTML(instances, disks, snapshots, projects):
             </table>
             <table
               class="row row-3"
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="mso-table-lspace: 0pt; mso-table-rspace: 0pt"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <table
+                      class="row-content stack"
+                      align="center"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="
+                        mso-table-lspace: 0pt;
+                        mso-table-rspace: 0pt;
+                        background-color: #e9f0ff;
+                        background-position: top center;
+                        color: #000000;
+                        width: 640px;
+                      "
+                      width="640"
+                    >
+                      <tbody>
+                        <tr>
+                          <td
+                            style="
+                              padding: 30px 20px 0;
+                              text-align: center;
+                              font-weight: bold;
+                              font-family: 'Josefin Sans', sans-serif;
+                              font-size: 2rem;
+                              background-color: #222222;
+                              color: white;
+                            "
+                          >
+                            Action Items
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="
+                              padding: 30px 20px 50px;
+                              background-color: #222222;
+                              color: white;
+                            "
+                          >
+                            <table
+                              class="row-content stack"
+                              align="center"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="
+                                mso-table-lspace: 0pt;
+                                mso-table-rspace: 0pt;
+                                background-position: top center;
+                                width: 550px;
+                                font-family: Montserrat, sans-serif;
+                              "
+                            >
+                              <tbody>
+                                <tr style="color: white">
+                                  <td
+                                    colspan="3"
+                                    style="
+                                      padding: 10px;
+                                      border-bottom: 2px solid white;
+                                      font-size: 1.5rem;
+                                    "
+                                  >
+                                    <strong>Alerts</strong>
+                                    <i
+                                      class="fa-solid fa-triangle-exclamation"
+                                      style="color: #e35535"
+                                    ></i>
+                                    <span
+                                      style="
+                                        font-style: italic;
+                                        font-size: 0.8rem;
+                                      "
+                                      >(Please remove these items)</span
+                                    >
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="padding: 10px; font-weight: bold">
+                                    Projects
+                                  </td>
+                                  <td style="padding: 10px; font-weight: bold">
+                                    Type
+                                  </td>
+                                  <td style="padding: 10px; font-weight: bold">
+                                    Resource Name
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="padding: 10px">
+                                    project-name-lol
+                                  </td>
+                                  <td style="padding: 10px">Sole Tenant</td>
+                                  <td style="padding: 10px">
+                                    node-group-123asfcc
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table
+              class="row row-4"
               align="center"
               width="100%"
               border="0"
@@ -945,7 +1080,7 @@ def generateHTML(instances, disks, snapshots, projects):
               </tbody>
             </table>
             <table
-              class="row row-4"
+              class="row row-5"
               align="center"
               width="100%"
               border="0"
@@ -1450,7 +1585,7 @@ def generateHTML(instances, disks, snapshots, projects):
               </tbody>
             </table>
             <table
-              class="row row-5"
+              class="row row-6"
               align="center"
               width="100%"
               border="0"
@@ -1517,7 +1652,7 @@ def generateHTML(instances, disks, snapshots, projects):
             </table>
 
             <table
-              class="row row-6"
+              class="row row-7"
               align="center"
               width="100%"
               border="0"
@@ -1584,7 +1719,7 @@ def generateHTML(instances, disks, snapshots, projects):
             </table>
 
             <table
-              class="row row-9"
+              class="row row-8"
               align="center"
               width="100%"
               border="0"
@@ -1680,7 +1815,7 @@ def generateHTML(instances, disks, snapshots, projects):
             </table>
 
             <table
-              class="row row-10"
+              class="row row-9"
               align="center"
               width="100%"
               border="0"
@@ -1720,9 +1855,9 @@ def generateHTML(instances, disks, snapshots, projects):
                               font-weight: 400;
                               text-align: left;
                               vertical-align: center;
-                              border-top: 3px solid green;
+                              border-top: 3px solid #068FFF;
                               border-right: 0px;
-                              border-left: 3px solid green;
+                              border-left: 3px solid #068FFF;
                             "
                           >
                             <div class="border">
@@ -1767,9 +1902,9 @@ def generateHTML(instances, disks, snapshots, projects):
                               font-weight: 400;
                               text-align: left;
                               vertical-align: center;
-                              border-top: 3px solid green;
+                              border-top: 3px solid #068FFF;
                               border-right: 0px;
-                              border-left: 3px solid green;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                             "
@@ -1816,9 +1951,9 @@ def generateHTML(instances, disks, snapshots, projects):
                               font-weight: 400;
                               text-align: left;
                               vertical-align: center;
-                              border-top: 3px solid green;
+                              border-top: 3px solid #068FFF;
                               border-right: 0px;
-                              border-left: 3px solid green;
+                              border-left: 3px solid #068FFF;
                               padding-left: 2px;
                               padding-right: 2px;
                             "
@@ -1865,9 +2000,9 @@ def generateHTML(instances, disks, snapshots, projects):
                               font-weight: 400;
                               text-align: left;
                               vertical-align: center;
-                              border-top: 3px solid green;
-                              border-right: 3px solid green;
-                              border-left: 3px solid green;
+                              border-top: 3px solid #068FFF;
+                              border-right: 3px solid #068FFF;
+                              border-left: 3px solid #068FFF;
                             "
                           >
                             <div class="border">
@@ -1915,7 +2050,7 @@ def generateHTML(instances, disks, snapshots, projects):
                               mso-table-rspace: 0pt;
                               font-weight: 400;
                               text-align: left;
-                              border-top: 3px solid coral;
+                              border-top: 3px solid #068FFF;
                               vertical-align: center;
                               border-bottom: 0px;
                               padding-left: 2px;
@@ -1930,7 +2065,7 @@ def generateHTML(instances, disks, snapshots, projects):
                               mso-table-rspace: 0pt;
                               font-weight: 400;
                               text-align: left;
-                              border-top: 3px solid coral;
+                              border-top: 3px solid #068FFF;
                               vertical-align: center;
                               border-bottom: 0px;
                               padding-left: 2px;
@@ -1945,7 +2080,7 @@ def generateHTML(instances, disks, snapshots, projects):
                               mso-table-rspace: 0pt;
                               font-weight: 400;
                               text-align: left;
-                              border-top: 3px solid coral;
+                              border-top: 3px solid #068FFF;
                               vertical-align: center;
                               border-bottom: 0px;
                               padding-left: 2px;
@@ -1960,7 +2095,7 @@ def generateHTML(instances, disks, snapshots, projects):
                               mso-table-rspace: 0pt;
                               font-weight: 400;
                               text-align: left;
-                              border-top: 3px solid coral;
+                              border-top: 3px solid #068FFF;
                               vertical-align: center;
                               border-bottom: 0px;
                               padding-left: 2px;
@@ -1979,7 +2114,7 @@ def generateHTML(instances, disks, snapshots, projects):
             </table>
 
             <table
-              class="row row-6"
+              class="row row-10"
               align="center"
               width="100%"
               border="0"
