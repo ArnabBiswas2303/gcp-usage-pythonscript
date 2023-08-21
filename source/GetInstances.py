@@ -14,7 +14,7 @@ def getInstances(credentials, project_id):
 
     counter = 1
     col = ['instanceName', 'instanceId', 'creation_time', 'diskCount',
-                        'guestOS', 'natIP', 'nodeGroupName', 'nodeName']
+           'guestOS', 'natIP', 'nodeGroupName', 'nodeName', 'machineType']
     instance_df = pd.DataFrame(columns=col)
     while request is not None:
         response = request.execute()
@@ -25,9 +25,11 @@ def getInstances(credentials, project_id):
                         instance['disks'])
                     natIP, guestOS, creation_time = None, None, None
                     nodeGroupName, nodeName = None, None
+                    machineType = None
 
                     if 'creationTimestamp' in instance:
-                        creation_time = instance['creationTimestamp'].split('T')[0]
+                        creation_time = instance['creationTimestamp'].split('T')[
+                            0]
                         UTCTime = datetime.strptime(creation_time, "%Y-%m-%d")
                         epochTime = (UTCTime - datetime(1970, 1, 1)
                                      ).total_seconds()
@@ -49,15 +51,18 @@ def getInstances(credentials, project_id):
                             if element['key'] == nodeNameKey:
                                 nodeName = element['values'][0]
 
-                    #print(counter, instanceName, instanceId, creationTime, diskCount,
+                    if 'machineType' in instance:
+                        machineType = instance['machineType'].split('/')[-1]
+
+                    # print(counter, instanceName, instanceId, creationTime, diskCount,
                     #      guestOS, natIP, nodeGroupName, nodeName)
-                    data_dict = {'instanceName' : instanceName, 'instanceId' : instanceId, 'creation_time' : creation_time, 
-                                'diskCount' : diskCount, 'guestOS':guestOS, 'natIP' : natIP, 
-                                'nodeGroupName' : nodeGroupName, 'nodeName':nodeName}
+                    data_dict = {'instanceName': instanceName, 'instanceId': instanceId, 'creation_time': creation_time,
+                                 'diskCount': diskCount, 'guestOS': guestOS, 'natIP': natIP,
+                                 'nodeGroupName': nodeGroupName, 'nodeName': nodeName,
+                                 'machineType': machineType}
                     temp_df = pd.DataFrame(data_dict, index=[0])
-                    instance_df = pd.concat([instance_df,temp_df])
+                    instance_df = pd.concat([instance_df, temp_df])
                     counter = counter + 1
-                    
 
         request = service.instances().aggregatedList_next(
             previous_request=request, previous_response=response)
