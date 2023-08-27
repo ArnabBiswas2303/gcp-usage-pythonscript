@@ -50,10 +50,11 @@ def GetUsage(project_id):
     if not actionable_disks.empty:
         action_disks = []
         for name, sizeGb in actionable_disks.iloc[:, :].to_numpy():
-            d = {}
-            d["diskName"] = name
-            d["diskSize"] = sizeGb
-            action_disks.append(d)
+            disk = {}
+            disk["disk_name"] = name
+            disk["disk_size"] = sizeGb
+            disk["project_name"] = project_id
+            action_disks.append(disk)
         actionable_items["disks"] = action_disks
 
     # fetch instance usage
@@ -122,8 +123,9 @@ def GetUsage(project_id):
         action_snaps = []
         for snap_name, source_disk_size in actionable_snaps.iloc[:, :].to_numpy():
             action_snap = {}
-            action_snap["snapshotName"] = snap_name
-            action_snap["snapshotSize"] = source_disk_size
+            action_snap["snapshot_name"] = snap_name
+            action_snap["snapshot_size"] = source_disk_size
+            action_snap["project_name"] = project_id
             action_snap.append(action_snap)
         actionable_items["snapshots"] = action_snaps
 
@@ -153,7 +155,7 @@ def GetUsage(project_id):
         len(buckets),
         len(ips),
         len(keys),
-        {project_id: actionable_items},
+        actionable_items,
     )
 
 
@@ -176,7 +178,11 @@ while request is not None:
     )
 print(project_ids)
 
+
 # Get Per Project Usage Report
+action_disks = []
+action_snaps = []
+action_instance = []
 for project_id in project_ids:
     instances, disks, snaps, buckets, ips, keys, actionable_items = GetUsage(project_id)
     print("actionable items--")

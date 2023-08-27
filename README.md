@@ -24,6 +24,7 @@
 - compute.instances.get
 - compute.instances.list
 - compute.snapshots.list
+- compute.nodeGroups.list
 - storage.buckets.get
 - storage.buckets.getIamPolicy
 - storage.buckets.list
