@@ -8,6 +8,7 @@ def getStaticIP(credential_object, project_id):
     request = service.addresses().aggregatedList(project=project_id)
     col = ['address_id', 'name', 'ip', 'status', 'creation_time', 'region', 'instance']
     ips_df = pd.DataFrame(columns=col)
+    
     while request is not None:
         response = request.execute()
         for name, addresses_scoped_list in response['items'].items():
@@ -53,5 +54,3 @@ def getStaticIP(credential_object, project_id):
 
         request = service.addresses().aggregatedList_next(previous_request=request, previous_response=response)
     return ips_df
-
-

@@ -1,5 +1,6 @@
 import Authentication
 import DiskUsage
+import NodeGroup
 import GetInstances
 import SnapUsage
 import IpUsage
@@ -11,6 +12,7 @@ import datetime as DT
 import numpy as np
 import os
 from googleapiclient import discovery
+
 
 json_key_location = str(os.getenv("GCP_SCRIPT_JSON_KEY_PATH"))
 
@@ -25,6 +27,10 @@ def GetUsage(project_id):
     date_condition = pd.date_range(start=week_ago, end=today, inclusive="both")
     date_condition = [i.strftime("%Y-%m-%d") for i in date_condition]
 
+
+    # fetch node group usage
+    node_groups = NodeGroup.getNodeGroup(credential_object, project_id)
+
     # fetch ips usage
     ips = IpUsage.getStaticIP(credential_object, project_id)
     ips = ips.reset_index(drop=True)
@@ -32,6 +38,7 @@ def GetUsage(project_id):
         ips["creation_time"].isin(date_condition), "background-color: #16FF00", ""
     )
     ip_styler = ips.style.apply(lambda _: highlighted_rows_ips)
+
 
     # fetch disk usage
     disks = DiskUsage.getDisks(credential_object, project_id)
@@ -68,7 +75,7 @@ def GetUsage(project_id):
     highlighted_rows_instances = np.where(
         instances["nodeGroupName"].isna(),
         highlighted_rows_instances,
-        "background-color: red",
+        "background-color: #FD8A8A",
     )
     instances_styler = instances.style.apply(lambda _: highlighted_rows_instances)
 
@@ -147,6 +154,9 @@ def GetUsage(project_id):
 
         if keys.shape[0] != 0:
             keys.to_excel(writer, sheet_name="Keys", index=False)
+        
+        if node_groups.shape[0] != 0:
+            node_groups.to_excel(writer, sheet_name="Sole Tenant Groups", index=False)
 
     return (
         len(instances),
