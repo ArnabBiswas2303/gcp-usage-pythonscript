@@ -27,9 +27,22 @@ def GetUsage(project_id):
     date_condition = pd.date_range(start=week_ago, end=today, inclusive="both")
     date_condition = [i.strftime("%Y-%m-%d") for i in date_condition]
 
-
     # fetch node group usage
     node_groups = NodeGroup.getNodeGroup(credential_object, project_id)
+
+    # Add node groups to actionable instance
+    actionable_node_group = pd.DataFrame()
+    actionable_node_group = node_groups.loc[node_groups["node_group"].notna()]
+    if not actionable_node_group.empty:
+        actionable_node_group = actionable_node_group[["node_group"]]
+        action_node_group_list = []
+        for nodeGroupName in actionable_node_group.iloc[:, :].to_numpy():
+            action_node_group = {}
+            action_node_group["project_name"] = project_id
+            action_node_group["node_groups"] = nodeGroupName[0]
+            action_node_group["reason"] = "Sole Tenant Node Group"
+            action_node_group_list.append(action_node_group)
+        actionable_items["nodeGroups"] = action_node_group_list
 
     # fetch ips usage
     ips = IpUsage.getStaticIP(credential_object, project_id)
@@ -38,7 +51,6 @@ def GetUsage(project_id):
         ips["creation_time"].isin(date_condition), "background-color: #16FF00", ""
     )
     ip_styler = ips.style.apply(lambda _: highlighted_rows_ips)
-
 
     # fetch disk usage
     disks = DiskUsage.getDisks(credential_object, project_id)
@@ -60,6 +72,7 @@ def GetUsage(project_id):
             disk = {}
             disk["disk_name"] = name
             disk["disk_size"] = sizeGb
+            disk["reason"] = f"Disk size {sizeGb} GB"
             disk["project_name"] = project_id
             action_disks.append(disk)
         actionable_items["disks"] = action_disks
@@ -97,7 +110,6 @@ def GetUsage(project_id):
                     costly_vm["reason"] = f"Number of vCPUs {vcpu}"
                     costly_vms.append(costly_vm)
         actionable_items["instances"] = costly_vms
-        print(actionable_items["instances"])
 
     # fetch bucket usage
     buckets = BucketUsage.getBuckets(credential_object, project_id)
@@ -154,7 +166,7 @@ def GetUsage(project_id):
 
         if keys.shape[0] != 0:
             keys.to_excel(writer, sheet_name="Keys", index=False)
-        
+
         if node_groups.shape[0] != 0:
             node_groups.to_excel(writer, sheet_name="Sole Tenant Groups", index=False)
 
