@@ -29,6 +29,8 @@ def GetUsage(project_id):
 
     # fetch node group usage
     node_groups = NodeGroup.getNodeGroup(credential_object, project_id)
+    node_groups = node_groups.reset_index(drop=True)
+    node_groups_styler = node_groups.style.apply(lambda _: ["background-color: #FD8A8A"] * node_groups.shape[0])
 
     # Add node groups to actionable instance
     actionable_node_group = pd.DataFrame()
@@ -60,7 +62,7 @@ def GetUsage(project_id):
     )
     disk_styler = disks.style.apply(lambda _: highlighted_rows_disks)
     actionable_disks = pd.DataFrame()
-    actionable_disks = disks.loc[disks["sizeGb"].astype(int) >= 200]
+    actionable_disks = disks.loc[disks["sizeGb"].astype(int) >= 500]
     actionable_disks = (
         actionable_disks[["name", "sizeGb"]]    
         if actionable_disks.shape[0]
@@ -104,7 +106,7 @@ def GetUsage(project_id):
             if len(machine_type_split) == 3:
                 vcpu = int(machine_type_split[-1])
                 costly_vm = {}
-                if vcpu >= 1:
+                if vcpu >= 16:
                     costly_vm["instance_name"] = name
                     costly_vm["project_name"] = project_id
                     costly_vm["vCpu"] = int(vcpu)
@@ -133,7 +135,7 @@ def GetUsage(project_id):
     )
     snaps_styler = snaps.style.apply(lambda _: highlighted_rows_snaps)
     actionable_snaps = pd.DataFrame()
-    actionable_snaps = snaps.loc[snaps["source_disk_size"].astype(int) > 10]
+    actionable_snaps = snaps.loc[snaps["source_disk_size"].astype(int) >= 200]
     actionable_snaps = (
         actionable_snaps[["snap_name", "source_disk_size"]]
         if actionable_snaps.shape[0]
@@ -169,7 +171,7 @@ def GetUsage(project_id):
             keys.to_excel(writer, sheet_name="Keys", index=False)
 
         if node_groups.shape[0] != 0:
-            node_groups.to_excel(writer, sheet_name="Sole Tenant Groups", index=False)
+            node_groups_styler.to_excel(writer, sheet_name="Sole Tenant Groups", index=False)
 
     return (
         len(instances),
@@ -236,7 +238,4 @@ for project_id in project_ids:
     total_ips += ips
     total_keys += keys
 
-print("==========================================")
-print(all_actionable_items)
-print("==========================================")
 Email.sendMail(total_instances, total_disks, total_snaps, total_projects, all_actionable_items)

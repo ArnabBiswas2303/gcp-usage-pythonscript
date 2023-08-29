@@ -457,7 +457,7 @@ def resourceInfoNodeGroupList(node_groups):
    goTill = minimum
 
    if total == 0:
-      return ["<tr style='text-align: center; font-size: 0.9rem'>No Node Groups Found</tr> ", 0, 0]
+      return ["<tr style='text-align: center; font-size: 0.9rem'><td height='40'><b> No Node Group Found </b></td></tr>", 0, 0]
 
    random.shuffle(node_groups)
    for node_group in node_groups:
@@ -475,7 +475,7 @@ def resourceInfoDiskList(disks):
    goTill = minimum
 
    if total == 0:
-      return ["<tr style='text-align: center; font-size: 0.9rem'>No Disks Found</tr> ", 0, 0]
+      return ["<tr style='text-align: center; font-size: 0.9rem'><td height='40'><b> No Disks Found </b></td></tr>", 0, 0]
 
    disks = sort_array_of_dictionaries_by_disk_size(disks)
    for disk in disks:
@@ -493,7 +493,7 @@ def resourceInfoInstanceList(instances):
    goTill = minimum
 
    if total == 0:
-      return ["<tr style='text-align: center; font-size: 0.9rem'>No Instances Found</tr> ", 0, 0]
+      return ["<tr style='text-align: center; font-size: 0.9rem'><td height='40'><b> No Instances Found </b></td></tr>", 0, 0]
 
    instances = sort_array_of_dictionaries_by_vCpu(instances)
    for instance in instances:
@@ -511,7 +511,7 @@ def resourceInfoSnapList(snapshots):
    goTill = minimum
 
    if total == 0:
-      return ["<tr style='text-align: center; font-size: 0.9rem'>No Snapshots Found</tr> ", 0, 0]
+      return ["<tr style='text-align: center; font-size: 0.9rem'><td height='40'><b> No Snapshots Found </b></td></tr>", 0, 0]
 
    snapshots = sort_array_of_dictionaries_by_snapshot_size(snapshots)
    for snapshot in snapshots:
@@ -1072,10 +1072,14 @@ def generateHTML(instances, disks, snapshots, projects, all_actionable_items):
                                     "
                                   >
                                     <strong>Alerts</strong>
-                                    <i
-                                      class="fa-solid fa-triangle-exclamation"
-                                      style="color: #e35535"
-                                    ></i>
+                                    <img
+                                      src="https://cdn-icons-png.flaticon.com/512/4201/4201973.png"
+                                      alt="alert"
+                                      style="
+                                        width: 25px;
+                                        vertical-align: bottom;
+                                      "
+                                    />
                                     <span
                                       style="
                                         font-style: italic;
@@ -1172,7 +1176,7 @@ def generateHTML(instances, disks, snapshots, projects, all_actionable_items):
                                         font-size: 0.6rem;
                                         font-weight: normal;
                                       "
-                                      >(Size More Than 500GB | Top {minimum_snapshots_count} out of {total_snapshots_count}
+                                      >(Size More Than 200GB | Top {minimum_snapshots_count} out of {total_snapshots_count}
                                       | Check the attacment for more info)</span
                                     >
                                   </td>

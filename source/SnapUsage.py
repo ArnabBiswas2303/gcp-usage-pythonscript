@@ -33,7 +33,9 @@ def getSnaps(credential_object, project_id):
 
             source_disk = snapshot['sourceDisk'].split('/')[-1]
             source_disk_size = snapshot['diskSizeGb']
-            storage_byte = snapshot['storageBytes']
+            storage_byte = ''
+            if 'storageBytes' in snapshot:
+                storage_byte = snapshot['storageBytes']
 
             snap_loc = snapshot['storageLocations'][0]
             if (len(snap_loc[0].split('-')) == 1):
