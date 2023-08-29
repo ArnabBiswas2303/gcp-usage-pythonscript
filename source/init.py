@@ -39,7 +39,7 @@ def GetUsage(project_id):
         for nodeGroupName in actionable_node_group.iloc[:, :].to_numpy():
             action_node_group = {}
             action_node_group["project_name"] = project_id
-            action_node_group["node_groups"] = nodeGroupName[0]
+            action_node_group["node_group_name"] = nodeGroupName[0]
             action_node_group["reason"] = "Sole Tenant Node Group"
             action_node_group_list.append(action_node_group)
         actionable_items["nodeGroups"] = action_node_group_list
@@ -62,7 +62,7 @@ def GetUsage(project_id):
     actionable_disks = pd.DataFrame()
     actionable_disks = disks.loc[disks["sizeGb"].astype(int) >= 200]
     actionable_disks = (
-        actionable_disks[["name", "sizeGb"]]
+        actionable_disks[["name", "sizeGb"]]    
         if actionable_disks.shape[0]
         else actionable_disks
     )
@@ -71,7 +71,7 @@ def GetUsage(project_id):
         for name, sizeGb in actionable_disks.iloc[:, :].to_numpy():
             disk = {}
             disk["disk_name"] = name
-            disk["disk_size"] = sizeGb
+            disk["disk_size"] = int(sizeGb)
             disk["reason"] = f"Disk size {sizeGb} GB"
             disk["project_name"] = project_id
             action_disks.append(disk)
@@ -107,6 +107,7 @@ def GetUsage(project_id):
                 if vcpu >= 1:
                     costly_vm["instance_name"] = name
                     costly_vm["project_name"] = project_id
+                    costly_vm["vCpu"] = int(vcpu)
                     costly_vm["reason"] = f"Number of vCPUs {vcpu}"
                     costly_vms.append(costly_vm)
         actionable_items["instances"] = costly_vms
@@ -132,9 +133,9 @@ def GetUsage(project_id):
     )
     snaps_styler = snaps.style.apply(lambda _: highlighted_rows_snaps)
     actionable_snaps = pd.DataFrame()
-    actionable_snaps = snaps.loc[snaps["source_disk_size"].astype(int) > 200]
+    actionable_snaps = snaps.loc[snaps["source_disk_size"].astype(int) > 10]
     actionable_snaps = (
-        actionable_snaps["snap_name", "source_disk_size"]
+        actionable_snaps[["snap_name", "source_disk_size"]]
         if actionable_snaps.shape[0]
         else actionable_snaps
     )
@@ -143,9 +144,9 @@ def GetUsage(project_id):
         for snap_name, source_disk_size in actionable_snaps.iloc[:, :].to_numpy():
             action_snap = {}
             action_snap["snapshot_name"] = snap_name
-            action_snap["snapshot_size"] = source_disk_size
+            action_snap["snapshot_size"] = int(source_disk_size)
             action_snap["project_name"] = project_id
-            action_snap.append(action_snap)
+            action_snaps.append(action_snap)
         actionable_items["snapshots"] = action_snaps
 
     with pd.ExcelWriter("{0}.xlsx".format(project_id)) as writer:
@@ -202,14 +203,24 @@ print(project_ids)
 
 
 # Get Per Project Usage Report
-action_disks = []
-action_snaps = []
-action_instance = []
+all_actionable_items = {}
+all_actionable_items["nodeGroups"] = []
+all_actionable_items["disks"] = []
+all_actionable_items["instances"] = []
+all_actionable_items["snapshots"] = []
+
 for project_id in project_ids:
     instances, disks, snaps, buckets, ips, keys, actionable_items = GetUsage(project_id)
-    print("actionable items--")
-    print(actionable_items)
-    print()
+
+    if "nodeGroups" in actionable_items:
+        all_actionable_items["nodeGroups"].extend(actionable_items["nodeGroups"])
+    if "disks" in actionable_items:
+        all_actionable_items["disks"].extend(actionable_items["disks"])
+    if "instances" in actionable_items:
+        all_actionable_items["instances"].extend(actionable_items["instances"])
+    if "snapshots" in actionable_items:
+        all_actionable_items["snapshots"].extend(actionable_items["snapshots"])
+
     proj_obj = {
         "project_id": project_id,
         "instances": instances,
@@ -225,4 +236,7 @@ for project_id in project_ids:
     total_ips += ips
     total_keys += keys
 
-# Email.sendMail(total_instances, total_disks, total_snaps, total_projects)
+print("==========================================")
+print(all_actionable_items)
+print("==========================================")
+Email.sendMail(total_instances, total_disks, total_snaps, total_projects, all_actionable_items)

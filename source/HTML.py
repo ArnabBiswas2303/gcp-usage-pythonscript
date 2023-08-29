@@ -1,4 +1,5 @@
 from datetime import date
+import random
 
 def midRow(project_id, instance, disk, snapshot):
     return f'''
@@ -399,10 +400,134 @@ def lastRow(project_id, instance, disk, snapshot):
                         </tr>
     '''
 
-def generateHTML(instances, disks, snapshots, projects):
+
+def innerHeaderForResourceInfo():
+   return f''' 
+      <!-- Inner Headers -->
+      <tr
+        style="text-align: center; font-size: 0.9rem"
+      >
+        <td style="padding: 6px; font-weight: bold">
+          Project Name
+        </td>
+        <td style="padding: 6px; font-weight: bold">
+          Resource Name
+        </td>
+      </tr>
+   '''
+
+def resourceInfo(project_id, resource_name):
+   return f'''
+      <!-- Resource Info -->
+      <tr
+        style="text-align: center; font-size: 0.7rem"
+      >
+        <td style="padding: 10px">
+          {project_id}
+        </td>
+        <td style="padding: 10px">
+          {resource_name}
+        </td>
+      </tr>
+   '''
+
+def sort_array_of_dictionaries_by_disk_size(array):
+  def _get_size(dictionary):
+    return dictionary["disk_size"]
+  
+  return sorted(array, key=_get_size)
+
+def sort_array_of_dictionaries_by_snapshot_size(array):
+  def _get_size(dictionary):
+    return dictionary["snapshot_size"]
+  
+  return sorted(array, key=_get_size)
+
+def sort_array_of_dictionaries_by_vCpu(array):
+  def _get_size(dictionary):
+    return dictionary["vCpu"]
+  
+  return sorted(array, key=_get_size)
+
+
+def resourceInfoNodeGroupList(node_groups):
+   node_group_list = innerHeaderForResourceInfo()
+   total = len(node_groups)
+   minimum = 5 if total > 5 else total
+   goTill = minimum
+
+   if total == 0:
+      return ["<tr style='text-align: center; font-size: 0.9rem'>No Node Groups Found</tr> ", 0, 0]
+
+   random.shuffle(node_groups)
+   for node_group in node_groups:
+      if goTill == 0:
+         break
+      node_group_list += resourceInfo(node_group["project_name"], node_group["node_group_name"])
+      goTill -= 1
+
+   return [node_group_list, minimum, total]
+
+def resourceInfoDiskList(disks):
+   disk_list = innerHeaderForResourceInfo()
+   total = len(disks)
+   minimum = 5 if total > 5 else total
+   goTill = minimum
+
+   if total == 0:
+      return ["<tr style='text-align: center; font-size: 0.9rem'>No Disks Found</tr> ", 0, 0]
+
+   disks = sort_array_of_dictionaries_by_disk_size(disks)
+   for disk in disks:
+      if goTill == 0:
+         break
+      disk_list += resourceInfo(disk["project_name"], disk["disk_name"])
+      goTill -= 1
+
+   return [disk_list, minimum, total]
+
+def resourceInfoInstanceList(instances):
+   instance_list = innerHeaderForResourceInfo()
+   total = len(instances)
+   minimum = 5 if total > 5 else total
+   goTill = minimum
+
+   if total == 0:
+      return ["<tr style='text-align: center; font-size: 0.9rem'>No Instances Found</tr> ", 0, 0]
+
+   instances = sort_array_of_dictionaries_by_vCpu(instances)
+   for instance in instances:
+      if goTill == 0:
+         break
+      instance_list += resourceInfo(instance["project_name"], instance["instance_name"])
+      goTill -= 1
+
+   return [instance_list, minimum, total]
+
+def resourceInfoSnapList(snapshots):
+   snapshot_list = innerHeaderForResourceInfo()
+   total = len(snapshots)
+   minimum = 5 if total > 5 else total
+   goTill = minimum
+
+   if total == 0:
+      return ["<tr style='text-align: center; font-size: 0.9rem'>No Snapshots Found</tr> ", 0, 0]
+
+   snapshots = sort_array_of_dictionaries_by_snapshot_size(snapshots)
+   for snapshot in snapshots:
+      if goTill == 0:
+         break;
+      snapshot_list += resourceInfo(snapshot["project_name"], snapshot["snapshot_name"])
+      goTill -= 1
+
+   return [snapshot_list, minimum, total]
+
+
+
+def generateHTML(instances, disks, snapshots, projects, all_actionable_items):
     months = ["JAN", "FEB", "MAR", "APRIL", "MAY", "JUNE", "JULY", "AUG", "SEP", "OCT", "NOV", "DEC"]
-    utilizationRows = ""
-    projLen = len(projects)
+    utilization_rows = ""
+    proj_len = len(projects)
     today =  date.today()
     
     print("Today's date:", today)
@@ -410,18 +535,23 @@ def generateHTML(instances, disks, snapshots, projects):
     year = today.strftime("%Y")
 
     # Generate utilization rows
-    for i in range(projLen):
+    for i in range(proj_len):
         project_id = projects[i]['project_id']
         instance = projects[i]['instances']
         disk = projects[i]['disks']
         snapshot = projects[i]['snapshots']
         
-        if (projLen - 1):
-          utilizationRows += lastRow(project_id, instance, disk, snapshot)
+        if (proj_len - 1):
+          utilization_rows += lastRow(project_id, instance, disk, snapshot)
         else:
-          utilizationRows += midRow(project_id, instance, disk, snapshot)
+          utilization_rows += midRow(project_id, instance, disk, snapshot)
     
     
+    # Get resource info
+    resources_node_group_html, minimum_node_groups_count, total_node_groups_count = resourceInfoNodeGroupList(all_actionable_items["nodeGroups"].copy())
+    resources_disk_html, minimum_disks_count, total_disks_count = resourceInfoDiskList(all_actionable_items["disks"].copy())
+    resources_instance_html, minimum_instances_count, total_instances_count = resourceInfoInstanceList(all_actionable_items["instances"].copy())
+    resources_snapshot_html, minimum_snapshots_count, total_snapshots_count = resourceInfoSnapList(all_actionable_items["snapshots"].copy())
 
     return f"""
 <!DOCTYPE html>
@@ -955,26 +1085,133 @@ def generateHTML(instances, disks, snapshots, projects):
                                     >
                                   </td>
                                 </tr>
+                                
+                                <!-- BREAKER -->
                                 <tr>
-                                  <td style="padding: 10px; font-weight: bold">
-                                    Projects
-                                  </td>
-                                  <td style="padding: 10px; font-weight: bold">
-                                    Type
-                                  </td>
-                                  <td style="padding: 10px; font-weight: bold">
-                                    Resource Name
+                                  <td height="30"></td>
+                                </tr>
+
+                                <!-- Outer Header Instances -->
+                                <tr style="text-align: left; font-size: 1.2rem">
+                                  <td
+                                    colspan="2"
+                                    style="
+                                      padding-left: 10px;
+                                      font-weight: bold;
+                                      font-family: 'Verdana', 'Arial',
+                                        sans-serif;
+                                      border-bottom: 1px solid white;
+                                    "
+                                  >
+                                    Instances
+                                    <span
+                                      style="
+                                        font-size: 0.6rem;
+                                        font-weight: normal;
+                                      "
+                                      >(Number of vCPU >= 16 | Top {minimum_instances_count} out of {total_instances_count}
+                                      | Check the attacment for more info)</span
+                                    >
                                   </td>
                                 </tr>
+
+                                {resources_instance_html}
+
+                                <!-- BREAKER -->
                                 <tr>
-                                  <td style="padding: 10px">
-                                    project-name-lol
-                                  </td>
-                                  <td style="padding: 10px">Sole Tenant</td>
-                                  <td style="padding: 10px">
-                                    node-group-123asfcc
+                                  <td height="10"></td>
+                                </tr>
+
+                                <!-- Outer Header Disks -->
+                                <tr style="text-align: left; font-size: 1.2rem">
+                                  <td
+                                    colspan="2"
+                                    style="
+                                      font-weight: bold;
+                                      font-family: 'Verdana', 'Arial',
+                                        sans-serif;
+                                      border-bottom: 1px solid white;
+                                      padding-left: 10px;
+                                    "
+                                  >
+                                    Disks
+                                    <span
+                                      style="
+                                        font-size: 0.6rem;
+                                        font-weight: normal;
+                                      "
+                                      >(Size More Than 500GB | Top {minimum_disks_count} out of {total_disks_count}
+                                      | Check the attacment for more info)</span
+                                    >
                                   </td>
                                 </tr>
+
+                                {resources_disk_html}
+
+
+                                <!-- BREAKER -->
+                                <tr>
+                                  <td height="10"></td>
+                                </tr>
+
+                                <!-- Outer Header Snapshots -->
+                                <tr style="text-align: left; font-size: 1.2rem">
+                                  <td
+                                    colspan="2"
+                                    style="
+                                      font-weight: bold;
+                                      font-family: 'Verdana', 'Arial',
+                                        sans-serif;
+                                      border-bottom: 1px solid white;
+                                      padding-left: 10px;
+                                    "
+                                  >
+                                    Snapshots
+                                    <span
+                                      style="
+                                        font-size: 0.6rem;
+                                        font-weight: normal;
+                                      "
+                                      >(Size More Than 500GB | Top {minimum_snapshots_count} out of {total_snapshots_count}
+                                      | Check the attacment for more info)</span
+                                    >
+                                  </td>
+                                </tr>
+
+                                {resources_snapshot_html}
+
+
+                                <!-- BREAKER -->
+                                <tr>
+                                  <td height="10"></td>
+                                </tr>
+
+                                <!-- Outer Header Snapshots -->
+                                <tr style="text-align: left; font-size: 1.2rem">
+                                  <td
+                                    colspan="2"
+                                    style="
+                                      font-weight: bold;
+                                      font-family: 'Verdana', 'Arial',
+                                        sans-serif;
+                                      border-bottom: 1px solid white;
+                                      padding-left: 10px;
+                                    "
+                                  >
+                                    Sole Tenents
+                                    <span
+                                      style="
+                                        font-size: 0.6rem;
+                                        font-weight: normal;
+                                      "
+                                      >(Top {minimum_node_groups_count} out of {total_node_groups_count} | Check the attacment
+                                      for more info)</span
+                                    >
+                                  </td>
+                                </tr>
+
+                                {resources_node_group_html}
+
                               </tbody>
                             </table>
                           </td>
@@ -2040,7 +2277,7 @@ def generateHTML(instances, disks, snapshots, projects):
                           </td>
                         </tr>
 
-                        {utilizationRows}
+                        {utilization_rows}
 
                         <tr class="reverse">
                           <td

@@ -11,16 +11,16 @@ from email.mime.text import MIMEText
 
 import HTML
 
-def sendMail(instances = "", disks = "", snapshots = "", projects = ""):
+def sendMail(instances = "", disks = "", snapshots = "", projects = "", all_actionable_items = {}):
     today =  date.today()
 
     outlook = win32.Dispatch('outlook.application')
     mail = outlook.CreateItem(0)
     mail.To = os.getenv('GCP_SCRIPT_EMAIL_TO')
     mail.Subject = f'GCP {today.strftime("%d %B %Y")} Usage Report'
-    mail.HTMLBody = HTML.generateHTML(instances, disks, snapshots, projects)
-    #this field is optional
+    mail.HTMLBody = HTML.generateHTML(instances, disks, snapshots, projects, all_actionable_items)
 
+    #this field is optional
     # To attach a file to the email (optional):
     for project_obj in projects:
         print(f"Attaching : {project_obj['project_id']}.xlsx")
