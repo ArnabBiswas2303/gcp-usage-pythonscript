@@ -1,6 +1,14 @@
-# gcp-usage-pythonscript
+# GCP USAGE SCRIPT
 
-## Installation
+## Environment Setup
+
+Add the following environment variables
+
+> GCP_SCRIPT_JSON_KEY_PATH => Path to JSON Key
+> GCP_SCRIPT_EMAIL_TO => Senders email
+> GCP_SCRIPT_EMAIL_FROM => Receivers email
+
+## Required Library Installation
 
 - pip install google-api-python-client
 - pip install google-cloud-storage
@@ -10,7 +18,7 @@
 - pip install Jinja2
 - pip install openpyxl
 
-## Required Permission
+## Required Permission For Service Account
 
 - cloudkms.cryptoKeyVersions.list
 - cloudkms.cryptoKeys.list
@@ -30,3 +38,5 @@
 - storage.buckets.list
 - resourcemanager.projects.get
 - iam.serviceAccounts.get
+
+  ### To Run: `python .\source\init.py`

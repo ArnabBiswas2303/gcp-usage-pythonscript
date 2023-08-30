@@ -22,7 +22,7 @@ def sendMail(instances = "", disks = "", snapshots = "", projects = "", all_acti
         all_actionable_items['snapshots'] = []
 
     today =  date.today()
-    sender_email = os.getenv('GCP_SCRIPT_EMAIL_TO')
+    sender_email = os.getenv('GCP_SCRIPT_EMAIL_FROM')
     receiver_email = os.getenv('GCP_SCRIPT_EMAIL_TO')
 
     message = MIMEMultipart()
