@@ -16,7 +16,15 @@ def getBuckets(credential_object, project_id):
         buckets = response['items']
         isDefaultEventBasedHoldEnabled = False
         rpo = '-'
+        
         for bucket in buckets:
+            ownerLabel = ''
+
+            # Find owner label
+            if 'labels' in bucket:
+                if 'owner' in bucket['labels']:
+                    ownerLabel = f"owner:{bucket['labels']['owner']}"
+
             count+=1
             id = bucket['id']
             name = bucket['name']
@@ -49,7 +57,8 @@ def getBuckets(credential_object, project_id):
                 'isDefaultEventBasedHoldEnabled':isDefaultEventBasedHoldEnabled, 'rpo':rpo, 
                 'isBucketPolicyEnabled':isBucketPolicyEnabled, 
                 'isUniformBucketLevelAccessEnabled':isUniformBucketLevelAccessEnabled, 
-                'publicAccessPrevention':publicAccessPrevention}
+                'publicAccessPrevention':publicAccessPrevention,
+                'ownerLabel': ownerLabel}
             temp_df = pd.DataFrame(data_dict, index=[0])
             bucket_df = pd.concat([bucket_df,temp_df])
 

@@ -26,6 +26,12 @@ def getInstances(credentials, project_id):
                     natIP, guestOS, creation_time = None, None, None
                     nodeGroupName, nodeName = None, None
                     machineType = None
+                    ownerLabel = ''
+
+                    # Find owner label
+                    if 'labels' in instance:
+                        if 'owner' in instance['labels']:
+                            ownerLabel = f"owner:{instance['labels']['owner']}"
 
                     if 'creationTimestamp' in instance:
                         creation_time = instance['creationTimestamp'].split('T')[
@@ -59,7 +65,8 @@ def getInstances(credentials, project_id):
                     data_dict = {'instanceName': instanceName, 'instanceId': instanceId, 'creation_time': creation_time,
                                  'diskCount': diskCount, 'guestOS': guestOS, 'natIP': natIP,
                                  'nodeGroupName': nodeGroupName, 'nodeName': nodeName,
-                                 'machineType': machineType}
+                                 'machineType': machineType,
+                                 'ownerLabel': ownerLabel}
                     temp_df = pd.DataFrame(data_dict, index=[0])
                     instance_df = pd.concat([instance_df, temp_df])
                     counter = counter + 1

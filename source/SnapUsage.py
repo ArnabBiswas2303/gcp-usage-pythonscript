@@ -18,6 +18,12 @@ def getSnaps(credential_object, project_id):
         for snapshot in response['items']:
             is_multi_regional, is_auto_created = False, False
             schedule_policy = '-'
+            ownerLabel = ''
+
+            # Find owner label
+            if 'labels' in snapshot:
+                if 'owner' in snapshot['labels']:
+                    ownerLabel = f"owner:{snapshot['labels']['owner']}"
 
             snap_id = snapshot['id']
 
@@ -51,7 +57,7 @@ def getSnaps(credential_object, project_id):
             data_dict = {'snap_id': snap_id, 'snap_name': snap_name, 'creation_time': creation_time, 'status': status,
                          'source_disk': source_disk, 'source_disk_size': source_disk_size, 'storage_byte': storage_byte,
                          'is_multi_regional': is_multi_regional, 'snap_loc': snap_loc, 'is_auto_created': is_auto_created,
-                         'schedule_policy': schedule_policy}
+                         'schedule_policy': schedule_policy, 'ownerLabel': ownerLabel}
             temp_df = pd.DataFrame(data_dict, index=[0])
             snap_df = pd.concat([snap_df, temp_df])
 

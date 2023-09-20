@@ -21,6 +21,12 @@ def getDisks(credential_object, project_id):
                     is_regional, in_use = False, False
                     use_instance_name, region, zone, creationTime = '', '', '', ''
                     replica_zones = ''
+                    ownerLabel = ''
+
+                    # Find owner label
+                    if 'labels' in disk:
+                        if 'owner' in disk['labels']:
+                            ownerLabel = f"owner:{disk['labels']['owner']}"
 
                     id = disk['id']
                     name = disk['name']
@@ -48,7 +54,7 @@ def getDisks(credential_object, project_id):
                     #print(count, id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
                     data_dict = {'id':id, 'name':name, 'sizeGb':sizeGb, 'is_regional':is_regional, 
                             'region':region, 'zone':zone, 'replica_zones':replica_zones, 'in_use':in_use, 
-                            'use_instance_name':use_instance_name, 'creation_time':creation_time}
+                            'use_instance_name':use_instance_name, 'creation_time':creation_time, 'ownerLabel': ownerLabel}
                     temp_df = pd.DataFrame(data_dict, index=[0])
                     disk_df = pd.concat([disk_df,temp_df])
                     count+=1
