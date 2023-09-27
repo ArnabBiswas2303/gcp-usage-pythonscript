@@ -3,7 +3,6 @@ from datetime import datetime
 import pandas as pd
 
 def getStaticIP(credential_object, project_id):
-    count=0
     service = discovery.build('compute', 'v1', credentials=credential_object)
     request = service.addresses().aggregatedList(project=project_id)
     col = ['address_id', 'name', 'ip', 'status', 'creation_time', 'region', 'instance']
@@ -34,7 +33,6 @@ def getStaticIP(credential_object, project_id):
                 #skip if address type is INTERNAL
                 if address['addressType'] == "INTERNAL":
                     continue
-                count+=1
                 if 'users' in address:
                     #skip if forwarding rule
                     if address['users'][0].split('/')[-2] != 'instances':
@@ -46,7 +44,7 @@ def getStaticIP(credential_object, project_id):
                 region = address['region'].split('/')[-1]
                 status = address['status']
 
-                #print(count, address_id, name, ip, status, creation_time, region, instance)
+                
                 data_dict = {'address_id':address_id, 'name':name, 'ip':ip, 
                             'status':status, 'creation_time':creation_time, 'region':region, 'instance':instance}
                 temp_df = pd.DataFrame(data_dict, index=[0])

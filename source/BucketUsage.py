@@ -50,8 +50,7 @@ def getBuckets(credential_object, project_id):
             isUniformBucketLevelAccessEnabled = iamConfigurations['uniformBucketLevelAccess']['enabled']
             publicAccessPrevention = iamConfigurations['publicAccessPrevention']
 
-            #print(count, id, name, projectNumber, location, location_type, storageClass, creation_time, isDefaultEventBasedHoldEnabled, 
-            #        rpo, isBucketPolicyEnabled, isUniformBucketLevelAccessEnabled, publicAccessPrevention)
+            
             data_dict = {'id':id, 'name':name, 'projectNumber':projectNumber, 'location':location, 
                 'location_type':location_type, 'storageClass':storageClass, 'creation_time':creation_time, 
                 'isDefaultEventBasedHoldEnabled':isDefaultEventBasedHoldEnabled, 'rpo':rpo, 

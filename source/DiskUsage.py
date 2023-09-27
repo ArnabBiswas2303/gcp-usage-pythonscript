@@ -51,7 +51,7 @@ def getDisks(credential_object, project_id):
                         timeObj = datetime.fromtimestamp(epochTime)
                         creation_time = timeObj.strftime("%Y-%m-%d")
 
-                    #print(count, id, name, sizeGb, is_regional, region, zone, replica_zones, in_use, use_instance_name, creationTime)
+                    
                     data_dict = {'id':id, 'name':name, 'sizeGb':sizeGb, 'is_regional':is_regional, 
                             'region':region, 'zone':zone, 'replica_zones':replica_zones, 'in_use':in_use, 
                             'use_instance_name':use_instance_name, 'creation_time':creation_time, 'ownerLabel': ownerLabel}

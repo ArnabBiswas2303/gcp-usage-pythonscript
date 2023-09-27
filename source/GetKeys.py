@@ -13,7 +13,6 @@ def getKeys(credentials, projectId):
 
     instance_df = pd.DataFrame(columns=['key_name'])
     if response.status_code != 200:
-        print(response.json())
         return instance_df
 
     for key in response.json()['cryptoKeys']:

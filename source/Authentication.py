@@ -12,5 +12,4 @@ def getAuth(jsonKeyLocation):
         gcp_service_account_json, scopes=['https://www.googleapis.com/auth/cloud-platform'])
     auth_req = google.auth.transport.requests.Request()
     credentials.refresh(auth_req)
-    # print(credentials.token) -> Prints the token
     return credentials

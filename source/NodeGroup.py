@@ -16,7 +16,6 @@ def getNodeGroup(credentials, projectId):
 
     nodegroup_df = pd.DataFrame(columns=col)
     if response.status_code != 200:
-        print(response.json())
         return nodegroup_df
 
     nodeGroupList = response.json()['items']

@@ -60,8 +60,7 @@ def getInstances(credentials, project_id):
                     if 'machineType' in instance:
                         machineType = instance['machineType'].split('/')[-1]
 
-                    # print(counter, instanceName, instanceId, creationTime, diskCount,
-                    #      guestOS, natIP, nodeGroupName, nodeName)
+                    
                     data_dict = {'instanceName': instanceName, 'instanceId': instanceId, 'creation_time': creation_time,
                                  'diskCount': diskCount, 'guestOS': guestOS, 'natIP': natIP,
                                  'nodeGroupName': nodeGroupName, 'nodeName': nodeName,
