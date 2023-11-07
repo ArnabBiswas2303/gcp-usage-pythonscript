@@ -5,23 +5,23 @@ import pandas as pd
 def getNodeGroup(credentials, projectId):
     # required columns
     col = ['node_group', 'creation_time', 'location']
-
     # make sure node group api is enabled for the given project.
     nodeGroupAggListURL = f"https://compute.googleapis.com/compute/v1/projects/{projectId}/aggregated/nodeGroups"
     headers = {
         "Authorization": f"Bearer {credentials.token}"
     }
 
-    response = requests.get(nodeGroupAggListURL, headers=headers)
+    try:
+        response = requests.get(nodeGroupAggListURL, headers=headers)
 
-    nodegroup_df = pd.DataFrame(columns=col)
-    if response.status_code != 200:
-        return nodegroup_df
+        nodegroup_df = pd.DataFrame(columns=col)
+        if response.status_code != 200:
+            return nodegroup_df
 
-    nodeGroupList = response.json()['items']
-    for zone in nodeGroupList:
-        if 'warning' in nodeGroupList[zone]:
-            continue
+        nodeGroupList = response.json()['items']
+        for zone in nodeGroupList:
+            if 'warning' in nodeGroupList[zone]:
+                continue
 
         nodeGroupName, creationTime, location = '', '', ''
         zoneOrRegion = zone.split('/')[-1]
@@ -39,5 +39,8 @@ def getNodeGroup(credentials, projectId):
 
             temp_df = pd.DataFrame(data_dict, index=[0])
             nodegroup_df = pd.concat([nodegroup_df, temp_df])
+            
+    except Exception as e:
+        print(str(e))
 
     return nodegroup_df

@@ -6,7 +6,6 @@ import pandas as pd
 def getDisks(credential_object, project_id):
     service = discovery.build('compute', 'v1', credentials=credential_object)
     request = service.disks().aggregatedList(project=project_id)
-    count = 1
     col = ['id', 'name', 'sizeGb', 'is_regional', 'region', 'zone', 
             'replica_zones', 'in_use', 'use_instance_name', 'creation_time']
     disk_df = pd.DataFrame(columns=col)
@@ -19,7 +18,7 @@ def getDisks(credential_object, project_id):
             if 'disks' in disks_scoped_list:
                 for disk in disks_scoped_list['disks']:
                     is_regional, in_use = False, False
-                    use_instance_name, region, zone, creationTime = '', '', '', ''
+                    use_instance_name, region, zone, creation_time = '', '', '', ''
                     replica_zones = ''
                     ownerLabel = ''
 
@@ -57,6 +56,5 @@ def getDisks(credential_object, project_id):
                             'use_instance_name':use_instance_name, 'creation_time':creation_time, 'ownerLabel': ownerLabel}
                     temp_df = pd.DataFrame(data_dict, index=[0])
                     disk_df = pd.concat([disk_df,temp_df])
-                    count+=1
         request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
     return disk_df

@@ -30,7 +30,9 @@ def GetUsage(project_id):
     # fetch node group usage
     node_groups = NodeGroup.getNodeGroup(credential_object, project_id)
     node_groups = node_groups.reset_index(drop=True)
-    node_groups_styler = node_groups.style.apply(lambda _: ["background-color: #FD8A8A"] * node_groups.shape[0])
+    node_groups_styler = node_groups.style.apply(
+        lambda _: ["background-color: #FD8A8A"] * node_groups.shape[0]
+    )
 
     # Add node groups to actionable instance
     actionable_node_group = pd.DataFrame()
@@ -64,7 +66,7 @@ def GetUsage(project_id):
     actionable_disks = pd.DataFrame()
     actionable_disks = disks.loc[disks["sizeGb"].astype(int) >= 500]
     actionable_disks = (
-        actionable_disks[["name", "sizeGb"]]    
+        actionable_disks[["name", "sizeGb"]]
         if actionable_disks.shape[0]
         else actionable_disks
     )
@@ -171,7 +173,9 @@ def GetUsage(project_id):
             keys.to_excel(writer, sheet_name="Keys", index=False)
 
         if node_groups.shape[0] != 0:
-            node_groups_styler.to_excel(writer, sheet_name="Sole Tenant Groups", index=False)
+            node_groups_styler.to_excel(
+                writer, sheet_name="Sole Tenant Groups", index=False
+            )
 
     return (
         len(instances),
@@ -212,30 +216,38 @@ all_actionable_items["instances"] = []
 all_actionable_items["snapshots"] = []
 
 for project_id in project_ids:
-    instances, disks, snaps, buckets, ips, keys, actionable_items = GetUsage(project_id)
+    try:
+        instances, disks, snaps, buckets, ips, keys, actionable_items = GetUsage(
+            project_id
+        )
 
-    if "nodeGroups" in actionable_items:
-        all_actionable_items["nodeGroups"].extend(actionable_items["nodeGroups"])
-    if "disks" in actionable_items:
-        all_actionable_items["disks"].extend(actionable_items["disks"])
-    if "instances" in actionable_items:
-        all_actionable_items["instances"].extend(actionable_items["instances"])
-    if "snapshots" in actionable_items:
-        all_actionable_items["snapshots"].extend(actionable_items["snapshots"])
+        if "nodeGroups" in actionable_items:
+            all_actionable_items["nodeGroups"].extend(actionable_items["nodeGroups"])
+        if "disks" in actionable_items:
+            all_actionable_items["disks"].extend(actionable_items["disks"])
+        if "instances" in actionable_items:
+            all_actionable_items["instances"].extend(actionable_items["instances"])
+        if "snapshots" in actionable_items:
+            all_actionable_items["snapshots"].extend(actionable_items["snapshots"])
 
-    proj_obj = {
-        "project_id": project_id,
-        "instances": instances,
-        "disks": disks,
-        "snapshots": snaps,
-    }
+        proj_obj = {
+            "project_id": project_id,
+            "instances": instances,
+            "disks": disks,
+            "snapshots": snaps,
+        }
 
-    total_projects.append(proj_obj)
-    total_instances += instances
-    total_disks += disks
-    total_snaps += snaps
-    total_bukets += buckets
-    total_ips += ips
-    total_keys += keys
+        total_projects.append(proj_obj)
+        total_instances += instances
+        total_disks += disks
+        total_snaps += snaps
+        total_bukets += buckets
+        total_ips += ips
+        total_keys += keys
 
-Email.sendMail(total_instances, total_disks, total_snaps, total_projects, all_actionable_items)
+    except Exception as e:
+        print("init", str(e))
+
+Email.sendMail(
+    total_instances, total_disks, total_snaps, total_projects, all_actionable_items
+)
